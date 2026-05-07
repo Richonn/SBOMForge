@@ -1,0 +1,27 @@
+*TODO.md
+
+# Binaries
+sbomforge
+/dist/
+
+# Go
+*.test
+*.out
+coverage.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+.dockerignore
+
+# Test artifacts
+testdata/*/node_modules/
+testdata/*/.git/
