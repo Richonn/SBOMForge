@@ -23,11 +23,11 @@ jobs:
           go-version-file: go.mod
       - name: Build binaries
         run: |
-          GOOS=linux   GOARCH=amd64 go build -trimpath -o shieldci-linux-amd64   ./cmd/shieldci
-          GOOS=linux   GOARCH=arm64 go build -trimpath -o shieldci-linux-arm64   ./cmd/shieldci
-          GOOS=darwin  GOARCH=amd64 go build -trimpath -o shieldci-darwin-amd64  ./cmd/shieldci
-          GOOS=darwin  GOARCH=arm64 go build -trimpath -o shieldci-darwin-arm64  ./cmd/shieldci
-          GOOS=windows GOARCH=amd64 go build -trimpath -o shieldci-windows-amd64.exe ./cmd/shieldci
+          GOOS=linux   GOARCH=amd64 go build -trimpath -o sbomforge-linux-amd64   ./cmd/sbomforge
+          GOOS=linux   GOARCH=arm64 go build -trimpath -o sbomforge-linux-arm64   ./cmd/sbomforge
+          GOOS=darwin  GOARCH=amd64 go build -trimpath -o sbomforge-darwin-amd64  ./cmd/sbomforge
+          GOOS=darwin  GOARCH=arm64 go build -trimpath -o sbomforge-darwin-arm64  ./cmd/sbomforge
+          GOOS=windows GOARCH=amd64 go build -trimpath -o sbomforge-windows-amd64.exe ./cmd/sbomforge
       - name: Compute SHA256 hashes
         id: hash
         run: |
@@ -36,12 +36,12 @@ jobs:
       - name: Upload artifacts to GitHub Release
         run: |
           if gh release view "${{ github.ref_name }}" &>/dev/null; then
-            gh release upload "${{ github.ref_name }}" shieldci-* checksums.txt --clobber
+            gh release upload "${{ github.ref_name }}" sbomforge-* checksums.txt --clobber
           else
             gh release create "${{ github.ref_name }}" \
               --title "${{ github.ref_name }}" \
               --generate-notes \
-              shieldci-* checksums.txt
+              sbomforge-* checksums.txt
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -52,7 +52,7 @@ jobs:
       actions: read
       id-token: write
       contents: write
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@f7dd8c54c2067bafc12ca7a55595d5ee9b75204a # v2.1.0
     with:
       base64-subjects: ${{ needs.build.outputs.hashes }}
       upload-assets: true
