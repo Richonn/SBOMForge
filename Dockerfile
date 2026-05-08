@@ -1,4 +1,4 @@
-FROM golang:1.26-alpine AS builder
+FROM golang:1.26-alpine@sha256:91eda9776261207ea25fd06b5b7fed8d397dd2c0a283e77f2ab6e91bfa71079d AS builder
 
 WORKDIR /build
 
@@ -8,15 +8,15 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /sbomforge ./cmd/sbomforge
 
-FROM alpine:3.21
+FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d
 
 RUN apk add --no-cache curl ca-certificates
 
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh \
-    | sh -s -- -b /usr/local/bin
+    | sh -s -- -b /usr/local/bin v1.44.0
 
 RUN curl -sSfL \
-    https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64 \
+    https://github.com/sigstore/cosign/releases/download/v2.4.3/cosign-linux-amd64 \
     -o /usr/local/bin/cosign \
     && chmod +x /usr/local/bin/cosign
 
