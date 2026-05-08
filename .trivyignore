@@ -1,2 +1,9 @@
-# This file is intentionally left empty.
-# Add CVE IDs here only for false positives with documented justification.
+# CVEs in cosign's stdlib (Go 1.25.7).
+# All cosign releases up to v3.0.6 are compiled with Go 1.25.7.
+# These CVEs are not in SBOMForge's own code or dependencies.
+# Tracked upstream: https://github.com/sigstore/cosign/issues
+# Will be removed once cosign publishes a release built with Go >= 1.26.2.
+CVE-2026-25679
+CVE-2026-32280
+CVE-2026-32281
+CVE-2026-32283
