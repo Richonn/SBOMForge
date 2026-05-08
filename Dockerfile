@@ -19,7 +19,7 @@ RUN curl -sSfL \
     && rm /tmp/syft.tar.gz
 
 RUN curl -sSfL \
-    https://github.com/sigstore/cosign/releases/download/v2.4.3/cosign-linux-amd64 \
+    https://github.com/sigstore/cosign/releases/download/v3.0.6/cosign-linux-amd64 \
     -o /usr/local/bin/cosign \
     && chmod +x /usr/local/bin/cosign
 
