@@ -6,7 +6,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /sbomforge ./cmd/
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /sbomforge ./cmd/sbomforge
 
 FROM alpine:3.21
 
