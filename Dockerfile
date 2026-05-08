@@ -12,8 +12,11 @@ FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d650
 
 RUN apk add --no-cache curl ca-certificates
 
-RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh \
-    | sh -s -- -b /usr/local/bin v1.44.0
+RUN curl -sSfL \
+    https://github.com/anchore/syft/releases/download/v1.44.0/syft_1.44.0_linux_amd64.tar.gz \
+    -o /tmp/syft.tar.gz \
+    && tar -xzf /tmp/syft.tar.gz -C /usr/local/bin syft \
+    && rm /tmp/syft.tar.gz
 
 RUN curl -sSfL \
     https://github.com/sigstore/cosign/releases/download/v2.4.3/cosign-linux-amd64 \
