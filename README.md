@@ -2,9 +2,11 @@
 
 > GitHub Action that automatically generates a signed Software Bill of Materials (SBOM) for your project using Syft and Cosign, and attaches it to your GitHub releases.
 
+[![Marketplace](https://img.shields.io/badge/GitHub%20Marketplace-SBOMForge-blue?logo=github)](https://github.com/marketplace/actions/sbomforge)
 ![CI](https://github.com/Richonn/sbomforge/actions/workflows/ci.yml/badge.svg)
 ![License](https://img.shields.io/github/license/Richonn/sbomforge)
 ![Go version](https://img.shields.io/github/go-mod/go-version/Richonn/sbomforge)
+![Latest release](https://img.shields.io/github/v/release/Richonn/sbomforge)
 
 ---
 

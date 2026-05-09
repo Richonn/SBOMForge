@@ -37,6 +37,20 @@ func baseCfg() *config.Config {
 	}
 }
 
+func TestNew(t *testing.T) {
+	cfg := baseCfg()
+	c := New(cfg)
+	if c == nil {
+		t.Fatal("expected non-nil client")
+	}
+	if c.cfg != cfg {
+		t.Error("expected cfg to be set")
+	}
+	if c.gh == nil {
+		t.Error("expected gh client to be set")
+	}
+}
+
 func TestUpload_AttachDisabled(t *testing.T) {
 	cfg := baseCfg()
 	cfg.AttachToRelease = false
