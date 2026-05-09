@@ -27,18 +27,18 @@ type Config struct {
 func Load() (*Config, error) {
 	c := &Config{}
 
-	c.GitHubToken = getEnvDefault("INPUT_GITHUB_TOKEN", "")
+	c.GitHubToken = getEnvDefault("INPUT_GITHUB-TOKEN", "")
 	if c.GitHubToken == "" {
-		return nil, fmt.Errorf("INPUT_GITHUB_TOKEN is required")
+		return nil, fmt.Errorf("INPUT_GITHUB-TOKEN is required")
 	}
 
 	c.Format = getEnvDefault("INPUT_FORMAT", "spdx-json")
-	c.ArtifactName = getEnvDefault("INPUT_ARTIFACT_NAME", "sbom")
+	c.ArtifactName = getEnvDefault("INPUT_ARTIFACT-NAME", "sbom")
 	c.Sign = parseBool(getEnvDefault("INPUT_SIGN", "true"))
-	c.AttachToRelease = parseBool(getEnvDefault("INPUT_ATTACH_TO_RELEASE", "true"))
-	c.UploadToSummary = parseBool(getEnvDefault("INPUT_UPLOAD_TO_SUMMARY", "true"))
-	c.ScanPath = getEnvDefault("INPUT_SCAN_PATH", ".")
-	c.FailOnError = parseBool(getEnvDefault("INPUT_FAIL_ON_ERROR", "true"))
+	c.AttachToRelease = parseBool(getEnvDefault("INPUT_ATTACH-TO-RELEASE", "true"))
+	c.UploadToSummary = parseBool(getEnvDefault("INPUT_UPLOAD-TO-SUMMARY", "true"))
+	c.ScanPath = getEnvDefault("INPUT_SCAN-PATH", ".")
+	c.FailOnError = parseBool(getEnvDefault("INPUT_FAIL-ON-ERROR", "true"))
 
 	validFormats := map[string]bool{
 		"spdx-json":      true,
