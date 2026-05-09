@@ -8,7 +8,7 @@ import (
 
 func setBaseEnv(t *testing.T) {
 	t.Helper()
-	t.Setenv("INPUT_GITHUB_TOKEN", "ghp_test")
+	t.Setenv("INPUT_GITHUB-TOKEN", "ghp_test")
 	t.Setenv("GITHUB_REPOSITORY", "owner/repo")
 	t.Setenv("GITHUB_REF_NAME", "v1.0.0")
 	t.Setenv("GITHUB_EVENT_NAME", "release")
@@ -68,7 +68,7 @@ func TestLoad_GitHubRepository(t *testing.T) {
 }
 
 func TestLoad_MissingToken(t *testing.T) {
-	t.Setenv("INPUT_GITHUB_TOKEN", "")
+	t.Setenv("INPUT_GITHUB-TOKEN", "")
 	t.Setenv("GITHUB_REPOSITORY", "owner/repo")
 
 	_, err := Load()
@@ -107,7 +107,7 @@ func TestLoad_ValidFormats(t *testing.T) {
 }
 
 func TestLoad_InvalidRepository(t *testing.T) {
-	t.Setenv("INPUT_GITHUB_TOKEN", "ghp_test")
+	t.Setenv("INPUT_GITHUB-TOKEN", "ghp_test")
 	t.Setenv("GITHUB_REPOSITORY", "invalid-no-slash")
 
 	_, err := Load()
@@ -119,9 +119,9 @@ func TestLoad_InvalidRepository(t *testing.T) {
 func TestLoad_BoolInputs(t *testing.T) {
 	setBaseEnv(t)
 	t.Setenv("INPUT_SIGN", "false")
-	t.Setenv("INPUT_ATTACH_TO_RELEASE", "false")
-	t.Setenv("INPUT_UPLOAD_TO_SUMMARY", "false")
-	t.Setenv("INPUT_FAIL_ON_ERROR", "false")
+	t.Setenv("INPUT_ATTACH-TO-RELEASE", "false")
+	t.Setenv("INPUT_UPLOAD-TO-SUMMARY", "false")
+	t.Setenv("INPUT_FAIL-ON-ERROR", "false")
 
 	c, err := Load()
 	if err != nil {
