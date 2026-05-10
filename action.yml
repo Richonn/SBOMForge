@@ -33,6 +33,10 @@ inputs:
     description: Directory to scan. Useful for monorepos.
     required: false
     default: .
+  image:
+    description: Docker image to scan (e.g. alpine:3.21,ghcr.io/org/app:latest). If set, scan-path is ignored.
+    required: false
+    default: ""
   fail-on-error:
     description: Fail the job if SBOM generation fails.
     required: false

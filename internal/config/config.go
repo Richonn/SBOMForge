@@ -14,6 +14,7 @@ type Config struct {
 	AttachToRelease bool
 	UploadToSummary bool
 	ScanPath        string
+	Image           string
 	FailOnError     bool
 
 	RepoOwner   string
@@ -38,6 +39,7 @@ func Load() (*Config, error) {
 	c.AttachToRelease = parseBool(getEnvDefault("INPUT_ATTACH-TO-RELEASE", "true"))
 	c.UploadToSummary = parseBool(getEnvDefault("INPUT_UPLOAD-TO-SUMMARY", "true"))
 	c.ScanPath = getEnvDefault("INPUT_SCAN-PATH", ".")
+	c.Image = getEnvDefault("INPUT_IMAGE", "")
 	c.FailOnError = parseBool(getEnvDefault("INPUT_FAIL-ON-ERROR", "true"))
 
 	validFormats := map[string]bool{

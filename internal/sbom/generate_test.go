@@ -83,6 +83,49 @@ func TestGenerate_OutputPath(t *testing.T) {
 	}
 }
 
+func TestGenerate_DockerImage(t *testing.T) {
+	cfg := &config.Config{
+		ArtifactName: "sbom",
+		Format:       "spdx-json",
+		Image:        "alpine:3.21",
+	}
+
+	origExecCommand := execCommand
+	execCommand = fakeExecCommand
+	defer func() { execCommand = origExecCommand }()
+
+	path, err := Generate(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if path == "" {
+		t.Error("expected non-empty path")
+	}
+}
+
+func TestGenerate_DockerImageSource(t *testing.T) {
+	cfg := &config.Config{
+		ArtifactName: "sbom",
+		Format:       "spdx-json",
+		Image:        "alpine:3.21",
+	}
+
+	var capturedArgs []string
+	execCommand = func(ctx context.Context, name string, args ...string) *exec.Cmd {
+		capturedArgs = args
+		return fakeExecCommand(ctx, name, args...)
+	}
+	defer func() { execCommand = func(ctx context.Context, name string, args ...string) *exec.Cmd {
+		return exec.CommandContext(ctx, name, args...)
+	}}()
+
+	_, _ = Generate(context.Background(), cfg)
+
+	if len(capturedArgs) == 0 || capturedArgs[1] != "docker:alpine:3.21" {
+		t.Errorf("expected source docker:alpine:3.21, got args: %v", capturedArgs)
+	}
+}
+
 func TestGenerate_SyftFailure(t *testing.T) {
 	cfg := &config.Config{
 		ArtifactName: "sbom",

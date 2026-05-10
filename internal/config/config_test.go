@@ -116,6 +116,19 @@ func TestLoad_InvalidRepository(t *testing.T) {
 	}
 }
 
+func TestLoad_ImageInput(t *testing.T) {
+	setBaseEnv(t)
+	t.Setenv("INPUT_IMAGE", "alpine:3.21")
+
+	c, err := Load()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if c.Image != "alpine:3.21" {
+		t.Errorf("Image = %q, want alpine:3.21", c.Image)
+	}
+}
+
 func TestLoad_BoolInputs(t *testing.T) {
 	setBaseEnv(t)
 	t.Setenv("INPUT_SIGN", "false")

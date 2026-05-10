@@ -51,6 +51,7 @@ jobs:
 | `attach-to-release` | no | `true` | Attach the SBOM to the GitHub Release |
 | `upload-to-summary` | no | `true` | Show a summary in the GitHub Actions Job Summary |
 | `scan-path` | no | `.` | Directory to scan (useful for monorepos) |
+| `image` | no | — | Docker image to scan (e.g. `alpine:3.21`, `ghcr.io/org/app:latest`). If set, `scan-path` is ignored |
 | `fail-on-error` | no | `true` | Fail the job if SBOM generation fails |
 
 ## Outputs
@@ -85,9 +86,24 @@ cosign verify-blob \
 
 ---
 
+## Docker image scanning
+
+To scan a Docker image instead of source code, pass the `image` input:
+
+```yaml
+- uses: Richonn/sbomforge@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    image: alpine:3.21
+```
+
+When `image` is set, `scan-path` is ignored.
+
+---
+
 ## Roadmap
 
-- [ ] Docker image SBOM support
+- [x] Docker image SBOM support
 - [ ] Multiple formats in a single run
 - [ ] Monorepo support
 - [ ] SLSA attestation level 2
