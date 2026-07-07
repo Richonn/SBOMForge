@@ -31,7 +31,6 @@ func baseCfg() *config.Config {
 		RepoOwner:       "owner",
 		RepoName:        "repo",
 		RefName:         "v1.0.0",
-		Format:          "spdx-json",
 		Sign:            false,
 		AttachToRelease: true,
 	}
@@ -56,7 +55,7 @@ func TestUpload_AttachDisabled(t *testing.T) {
 	cfg.AttachToRelease = false
 
 	c := &Client{cfg: cfg, gh: github.NewClient(nil)}
-	url, err := c.Upload(context.Background(), "", "")
+	url, err := c.Upload(context.Background(), "", "", "spdx-json")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -74,7 +73,7 @@ func TestUpload_ReleaseNotFound(t *testing.T) {
 	_, ghClient := newTestServer(t, mux)
 	c := &Client{cfg: baseCfg(), gh: ghClient}
 
-	_, err := c.Upload(context.Background(), "", "")
+	_, err := c.Upload(context.Background(), "", "", "spdx-json")
 	if err == nil {
 		t.Fatal("expected error for missing release, got nil")
 	}
@@ -108,7 +107,7 @@ func TestUpload_Success(t *testing.T) {
 	_, _ = sbomFile.WriteString(`{}`)
 	_ = sbomFile.Close()
 
-	sbomURL, err := c.Upload(context.Background(), sbomFile.Name(), "")
+	sbomURL, err := c.Upload(context.Background(), sbomFile.Name(), "", "spdx-json")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

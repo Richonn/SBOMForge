@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 )
 
@@ -22,8 +23,8 @@ func TestLoad_Defaults(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if c.Format != "spdx-json" {
-		t.Errorf("Format = %q, want spdx-json", c.Format)
+	if !reflect.DeepEqual(c.Formats, []string{"spdx-json"}) {
+		t.Errorf("Formats = %q, want [spdx-json]", c.Formats)
 	}
 	if c.ArtifactName != "sbom" {
 		t.Errorf("ArtifactName = %q, want sbom", c.ArtifactName)
@@ -99,10 +100,36 @@ func TestLoad_ValidFormats(t *testing.T) {
 			if err != nil {
 				t.Fatalf("unexpected error for format %q: %v", f, err)
 			}
-			if c.Format != f {
-				t.Errorf("Format = %q, want %q", c.Format, f)
+			if !reflect.DeepEqual(c.Formats, []string{f}) {
+				t.Errorf("Formats = %q, want [%q]", c.Formats, f)
 			}
 		})
+	}
+}
+
+func TestLoad_MultipleFormats(t *testing.T) {
+	setBaseEnv(t)
+	t.Setenv("INPUT_FORMAT", "spdx-json,cyclonedx-json")
+
+	c, err := Load()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !reflect.DeepEqual(c.Formats, []string{"spdx-json", "cyclonedx-json"}) {
+		t.Errorf("Formats = %q, want [spdx-json cyclonedx-json]", c.Formats)
+	}
+}
+
+func TestLoad_MultipleFormatsWithSpaces(t *testing.T) {
+	setBaseEnv(t)
+	t.Setenv("INPUT_FORMAT", "spdx-json, cyclonedx-json , syft-json")
+
+	c, err := Load()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !reflect.DeepEqual(c.Formats, []string{"spdx-json", "cyclonedx-json", "syft-json"}) {
+		t.Errorf("Formats = %q, want [spdx-json cyclonedx-json syft-json]", c.Formats)
 	}
 }
 

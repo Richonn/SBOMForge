@@ -25,7 +25,7 @@ func New(cfg *config.Config) *Client {
 	}
 }
 
-func (c *Client) Upload(ctx context.Context, sbomPath, bundlePath string) (string, error) {
+func (c *Client) Upload(ctx context.Context, sbomPath, bundlePath, format string) (string, error) {
 	if !c.cfg.AttachToRelease {
 		return "", nil
 	}
@@ -35,7 +35,7 @@ func (c *Client) Upload(ctx context.Context, sbomPath, bundlePath string) (strin
 		return "", err
 	}
 
-	sbomURL, err := c.uploadAsset(ctx, release, sbomPath, assetLabel(c.cfg.Format))
+	sbomURL, err := c.uploadAsset(ctx, release, sbomPath, assetLabel(format))
 	if err != nil {
 		return "", fmt.Errorf("upload sbom: %w", err)
 	}

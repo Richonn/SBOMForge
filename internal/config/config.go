@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	GitHubToken     string
-	Format          []string
+	Formats         []string
 	ArtifactName    string
 	Sign            bool
 	AttachToRelease bool
@@ -38,7 +38,7 @@ func Load() (*Config, error) {
 		raw[i] = strings.TrimSpace(f)
 	}
 
-	c.Format = raw
+	c.Formats = raw
 	c.ArtifactName = getEnvDefault("INPUT_ARTIFACT-NAME", "sbom")
 	c.Sign = parseBool(getEnvDefault("INPUT_SIGN", "true"))
 	c.AttachToRelease = parseBool(getEnvDefault("INPUT_ATTACH-TO-RELEASE", "true"))
@@ -52,7 +52,7 @@ func Load() (*Config, error) {
 		"cyclonedx-json": true,
 		"syft-json":      true,
 	}
-	for _, f := range c.Format {
+	for _, f := range c.Formats {
 		if !validFormats[f] {
 			return nil, fmt.Errorf("invalid format %q: must be spdx-json, cyclonedx-json or syft-json", f)
 		}
