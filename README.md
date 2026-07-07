@@ -3,10 +3,10 @@
 > GitHub Action that automatically generates a signed Software Bill of Materials (SBOM) for your project using Syft and Cosign, and attaches it to your GitHub releases.
 
 [![Marketplace](https://img.shields.io/badge/GitHub%20Marketplace-SBOMForge-blue?logo=github)](https://github.com/marketplace/actions/sbomforge)
-![CI](https://github.com/Richonn/sbomforge/actions/workflows/ci.yml/badge.svg)
-![License](https://img.shields.io/github/license/Richonn/sbomforge)
-![Go version](https://img.shields.io/github/go-mod/go-version/Richonn/sbomforge)
-![Latest release](https://img.shields.io/github/v/release/Richonn/sbomforge)
+![CI](https://github.com/Richonn/SBOMForge/actions/workflows/ci.yml/badge.svg)
+![License](https://img.shields.io/github/license/Richonn/SBOMForge)
+![Go version](https://img.shields.io/github/go-mod/go-version/Richonn/SBOMForge)
+![Latest release](https://img.shields.io/github/v/release/Richonn/SBOMForge)
 
 ---
 
@@ -45,7 +45,7 @@ jobs:
 | Input | Required | Default | Description |
 |---|---|---|---|
 | `github-token` | yes | — | GitHub token to upload the SBOM as a release asset |
-| `format` | no | `spdx-json` | SBOM format: `spdx-json`, `cyclonedx-json`, `syft-json` |
+| `format` | no | `spdx-json` | SBOM format(s): `spdx-json`, `cyclonedx-json`, `syft-json`. Comma-separated for multiple (e.g. `spdx-json,cyclonedx-json`) |
 | `artifact-name` | no | `sbom` | Output filename prefix |
 | `sign` | no | `true` | Sign the SBOM with Cosign keyless |
 | `attach-to-release` | no | `true` | Attach the SBOM to the GitHub Release |
@@ -58,9 +58,9 @@ jobs:
 
 | Output | Description |
 |---|---|
-| `sbom-path` | Local path of the generated SBOM file |
-| `sbom-url` | Download URL of the SBOM on the GitHub Release |
-| `signature-bundle` | Path to the Cosign signature bundle |
+| `sbom-path` | Local path(s) of the generated SBOM file(s). Comma-separated when multiple formats are used |
+| `sbom-url` | Download URL(s) of the SBOM(s) on the GitHub Release. Comma-separated when multiple formats are used |
+| `signature-bundle` | Path(s) to the Cosign signature bundle(s). Comma-separated when multiple formats are used |
 
 ---
 
@@ -86,6 +86,21 @@ cosign verify-blob \
 
 ---
 
+## Multiple formats
+
+To generate SBOMs in multiple formats in a single run:
+
+```yaml
+- uses: Richonn/SBOMForge@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    format: spdx-json,cyclonedx-json
+```
+
+All formats are generated, signed, and uploaded to the release in one pass. Outputs (`sbom-path`, `sbom-url`, `signature-bundle`) are comma-separated when multiple formats are used.
+
+---
+
 ## Docker image scanning
 
 To scan a Docker image instead of source code, pass the `image` input:
@@ -104,7 +119,7 @@ When `image` is set, `scan-path` is ignored.
 ## Roadmap
 
 - [x] Docker image SBOM support
-- [ ] Multiple formats in a single run
+- [x] Multiple formats in a single run
 - [ ] Monorepo support
 - [ ] SLSA attestation level 2
 - [ ] Dry-run mode
