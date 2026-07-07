@@ -14,14 +14,14 @@ var execCommand = func(ctx context.Context, name string, args ...string) *exec.C
 	return exec.CommandContext(ctx, name, args...)
 }
 
-func Generate(ctx context.Context, cfg *config.Config) (string, error) {
-	outputPath := filepath.Join(os.TempDir(), cfg.ArtifactName+"."+cfg.Format+".json")
+func Generate(ctx context.Context, cfg *config.Config, format string) (string, error) {
+	outputPath := filepath.Join(os.TempDir(), cfg.ArtifactName+"."+format+".json")
 
 	source := cfg.ScanPath
 	if cfg.Image != "" {
 		source = "docker:" + cfg.Image
 	}
-	cmd := execCommand(ctx, "syft", "scan", source, "-o", cfg.Format+"="+outputPath)
+	cmd := execCommand(ctx, "syft", "scan", source, "-o", format+"="+outputPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 

@@ -11,7 +11,7 @@ import (
 func TestWrite_Disabled(t *testing.T) {
 	cfg := &config.Config{UploadToSummary: false}
 
-	if err := Write(cfg, "", "", ""); err != nil {
+	if err := Write(cfg, "", "", "", ""); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
@@ -32,12 +32,11 @@ func TestWrite_ContainsFields(t *testing.T) {
 
 	cfg := &config.Config{
 		UploadToSummary: true,
-		Format:          "spdx-json",
 		Sign:            true,
 		SummaryFile:     f.Name(),
 	}
 
-	if err := Write(cfg, sbomFile.Name(), "https://example.com/sbom.json", ""); err != nil {
+	if err := Write(cfg, "spdx-json", sbomFile.Name(), "https://example.com/sbom.json", ""); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -63,12 +62,11 @@ func TestWrite_NoURL(t *testing.T) {
 
 	cfg := &config.Config{
 		UploadToSummary: true,
-		Format:          "syft-json",
 		Sign:            false,
 		SummaryFile:     f.Name(),
 	}
 
-	if err := Write(cfg, "/nonexistent/sbom.json", "", ""); err != nil {
+	if err := Write(cfg, "syft-json", "/nonexistent/sbom.json", "", ""); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 

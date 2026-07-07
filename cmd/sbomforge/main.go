@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/Richonn/sbomforge/internal/config"
 	"github.com/Richonn/sbomforge/internal/release"
@@ -27,23 +28,32 @@ func run() error {
 		return fmt.Errorf("load config: %w", err)
 	}
 
-	sbomPath, err := sbom.Generate(ctx, cfg)
-	handleErr(cfg, err, "generate sbom")
-	_ = cfg.WriteOutput("sbom-path", sbomPath)
-
-	bundlePath, err := sign.Sign(ctx, cfg, sbomPath)
-	handleErr(cfg, err, "sign sbom")
-	_ = cfg.WriteOutput("signature-bundle", bundlePath)
+	var sbomPaths, bundlePaths, sbomURLs []string
 
 	client := release.New(cfg)
-	sbomURL, err := client.Upload(ctx, sbomPath, bundlePath)
-	handleErr(cfg, err, "upload to release")
-	_ = cfg.WriteOutput("sbom-url", sbomURL)
+	for _, format := range cfg.Formats {
+		sbomPath, err := sbom.Generate(ctx, cfg, format)
+		handleErr(cfg, err, "generate sbom")
 
-	err = summary.Write(cfg, sbomPath, sbomURL, bundlePath)
-	handleErr(cfg, err, "write summary")
+		bundlePath, err := sign.Sign(ctx, cfg, sbomPath)
+		handleErr(cfg, err, "sign sbom")
 
-	return err
+		sbomURL, err := client.Upload(ctx, sbomPath, bundlePath, format)
+		handleErr(cfg, err, "upload to release")
+
+		err = summary.Write(cfg, format, sbomPath, sbomURL, bundlePath)
+		handleErr(cfg, err, "write summary")
+
+		sbomPaths = append(sbomPaths, sbomPath)
+		bundlePaths = append(bundlePaths, bundlePath)
+		sbomURLs = append(sbomURLs, sbomURL)
+	}
+
+	_ = cfg.WriteOutput("sbom-path", strings.Join(sbomPaths, ","))
+	_ = cfg.WriteOutput("signature-bundle", strings.Join(bundlePaths, ","))
+	_ = cfg.WriteOutput("sbom-url", strings.Join(sbomURLs, ","))
+
+	return nil
 }
 
 func handleErr(cfg *config.Config, err error, msg string) {

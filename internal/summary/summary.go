@@ -14,7 +14,7 @@ type sbomDoc struct {
 	Artifacts  []any `json:"artifacts"`  // syft-json
 }
 
-func Write(cfg *config.Config, sbomPath, sbomURL, bundlePath string) error {
+func Write(cfg *config.Config, format, sbomPath, sbomURL, bundlePath string) error {
 	if !cfg.UploadToSummary {
 		return nil
 	}
@@ -34,7 +34,7 @@ func Write(cfg *config.Config, sbomPath, sbomURL, bundlePath string) error {
 | Components | %d |
 | Signed     | %v |
 | Release    | %s |
-`, cfg.Format, count, cfg.Sign, releaseLink)
+`, format, count, cfg.Sign, releaseLink)
 
 	return cfg.WriteSummary(md)
 }

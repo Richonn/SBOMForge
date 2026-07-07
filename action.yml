@@ -10,7 +10,7 @@ inputs:
     description: GitHub token to upload the SBOM as a release asset.
     required: true
   format:
-    description: SBOM format. One of spdx-json, cyclonedx-json, syft-json
+    description: 'SBOM format(s). One or more of: spdx-json, cyclonedx-json, syft-json. Comma-separated for multiple (e.g. "spdx-json,cyclonedx-json").'
     required: false
     default: spdx-json
   artifact-name:
@@ -44,11 +44,11 @@ inputs:
 
 outputs:
   sbom-path:
-    description: Local path of the generated SBOM file.
+    description: 'Local path(s) of the generated SBOM file(s). Comma-separated when multiple formats are used.'
   sbom-url:
-    description: Download URL of the SBOM on the Github Release.
+    description: 'Download URL(s) of the SBOM(s) on the GitHub Release. Comma-separated when multiple formats are used.'
   signature-bundle:
-    description: Path to the Cosign signature bundle.
+    description: 'Path(s) to the Cosign signature bundle(s). Comma-separated when multiple formats are used.'
 
 runs:
   using: docker
