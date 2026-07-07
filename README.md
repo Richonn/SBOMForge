@@ -31,9 +31,9 @@ jobs:
       id-token: write      # cosign keyless signing
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - uses: Richonn/sbomforge@v1
+      - uses: Richonn/SBOMForge@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -91,7 +91,7 @@ cosign verify-blob \
 To scan a Docker image instead of source code, pass the `image` input:
 
 ```yaml
-- uses: Richonn/sbomforge@v1
+- uses: Richonn/SBOMForge@v1
   with:
     github-token: ${{ secrets.GITHUB_TOKEN }}
     image: alpine:3.21
