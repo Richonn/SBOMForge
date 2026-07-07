@@ -52,4 +52,5 @@ jobs:
     permissions:
       contents: read
       security-events: write
+      pull-requests: read
     uses: ./.github/workflows/security.yml
