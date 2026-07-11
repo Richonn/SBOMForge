@@ -35,11 +35,17 @@ func run() error {
 		sbomPath, err := sbom.Generate(ctx, cfg, format)
 		handleErr(cfg, err, "generate sbom")
 
-		bundlePath, err := sign.Sign(ctx, cfg, sbomPath)
-		handleErr(cfg, err, "sign sbom")
+		var bundlePath string
+		if !cfg.DryRun {
+			bundlePath, err = sign.Sign(ctx, cfg, sbomPath)
+			handleErr(cfg, err, "sign sbom")
+		}
 
-		sbomURL, err := client.Upload(ctx, sbomPath, bundlePath, format)
-		handleErr(cfg, err, "upload to release")
+		var sbomURL string
+		if !cfg.DryRun {
+			sbomURL, err = client.Upload(ctx, sbomPath, bundlePath, format)
+			handleErr(cfg, err, "upload to release")
+		}
 
 		err = summary.Write(cfg, format, sbomPath, sbomURL, bundlePath)
 		handleErr(cfg, err, "write summary")
