@@ -53,6 +53,7 @@ jobs:
 | `scan-path` | no | `.` | Directory to scan (useful for monorepos) |
 | `image` | no | — | Docker image to scan (e.g. `alpine:3.21`, `ghcr.io/org/app:latest`). If set, `scan-path` is ignored |
 | `fail-on-error` | no | `true` | Fail the job if SBOM generation fails |
+| `dry-run` | no | `false` | Generate the SBOM without signing or uploading. Useful for testing |
 
 ## Outputs
 
@@ -101,6 +102,21 @@ All formats are generated, signed, and uploaded to the release in one pass. Outp
 
 ---
 
+## Dry-run mode
+
+To generate the SBOM without signing or uploading (useful for PRs or testing):
+
+```yaml
+- uses: Richonn/SBOMForge@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    dry-run: "true"
+```
+
+The SBOM is still generated and visible in the Job Summary, but no signature is created and nothing is uploaded to the release.
+
+---
+
 ## Docker image scanning
 
 To scan a Docker image instead of source code, pass the `image` input:
@@ -122,7 +138,7 @@ When `image` is set, `scan-path` is ignored.
 - [x] Multiple formats in a single run
 - [ ] Monorepo support
 - [ ] SLSA attestation level 2
-- [ ] Dry-run mode
+- [x] Dry-run mode
 - [ ] OCI registry upload (ghcr.io)
 
 ---
