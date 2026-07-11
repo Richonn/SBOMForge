@@ -133,6 +133,31 @@ func TestLoad_MultipleFormatsWithSpaces(t *testing.T) {
 	}
 }
 
+func TestLoad_DryRunDefault(t *testing.T) {
+	setBaseEnv(t)
+
+	c, err := Load()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if c.DryRun {
+		t.Error("DryRun = true, want false by default")
+	}
+}
+
+func TestLoad_DryRunEnabled(t *testing.T) {
+	setBaseEnv(t)
+	t.Setenv("INPUT_DRY-RUN", "true")
+
+	c, err := Load()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !c.DryRun {
+		t.Error("DryRun = false, want true")
+	}
+}
+
 func TestLoad_InvalidRepository(t *testing.T) {
 	t.Setenv("INPUT_GITHUB-TOKEN", "ghp_test")
 	t.Setenv("GITHUB_REPOSITORY", "invalid-no-slash")

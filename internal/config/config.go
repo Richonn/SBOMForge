@@ -47,7 +47,7 @@ func Load() (*Config, error) {
 	c.ScanPath = getEnvDefault("INPUT_SCAN-PATH", ".")
 	c.Image = getEnvDefault("INPUT_IMAGE", "")
 	c.FailOnError = parseBool(getEnvDefault("INPUT_FAIL-ON-ERROR", "true"))
-	c.DryRun = parseBool(getEnvDefault("INPUT_DRY_RUN", "false"))
+	c.DryRun = parseBool(getEnvDefault("INPUT_DRY-RUN", "false"))
 
 	validFormats := map[string]bool{
 		"spdx-json":      true,
