@@ -1,0 +1,6 @@
+# CVEs in stdlib Go embedded in cosign v3.1.1 and syft v1.46.0 binaries.
+# No upstream release compiled with Go 1.26.5 available yet (as of 2026-07-06).
+# Re-evaluate when cosign > v3.1.1 or syft > v1.46.0 is released.
+CVE-2026-27145
+CVE-2026-39822
+CVE-2026-42504
