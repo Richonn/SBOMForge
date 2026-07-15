@@ -54,6 +54,7 @@ jobs:
 | `image` | no | — | Docker image to scan (e.g. `alpine:3.21`, `ghcr.io/org/app:latest`). If set, `scan-path` is ignored |
 | `fail-on-error` | no | `true` | Fail the job if SBOM generation fails |
 | `dry-run` | no | `false` | Generate the SBOM without signing or uploading. Useful for testing |
+| `attest` | no | `false` | Generate a signed SLSA provenance attestation for each SBOM. Requires `id-token: write` permission |
 | `oci-image` | no | — | OCI image reference to attach the SBOM to (e.g. `ghcr.io/org/app@sha256:...`). Requires prior login with `docker/login-action` |
 
 ## Outputs
@@ -147,6 +148,43 @@ cosign download sbom ghcr.io/owner/app@sha256:abc123
 
 ---
 
+## SLSA provenance attestation
+
+To generate a signed SLSA provenance attestation alongside each SBOM, enable the `attest` input:
+
+```yaml
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write      # required for cosign keyless signing
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: Richonn/SBOMForge@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          attest: "true"
+```
+
+For each SBOM file generated, SBOMForge produces a `.provenance` file — an [in-toto](https://in-toto.io) statement with a [SLSA 0.2](https://slsa.dev/provenance/v0.2) predicate — signed with Cosign keyless and uploaded to the release. It records:
+
+- The SHA256 digest of the SBOM
+- The source commit (`GITHUB_SHA`), ref, and workflow
+- The build invocation ID (link to the Actions run)
+
+Verify the provenance signature locally:
+
+```bash
+cosign verify-blob \
+  --bundle=sbom.spdx-json.json.provenance.bundle \
+  sbom.spdx-json.json.provenance
+```
+
+---
+
 ## Monorepo support
 
 To scan multiple directories in a single run, pass a comma-separated list to `scan-path`:
@@ -182,7 +220,7 @@ When `image` is set, `scan-path` is ignored.
 - [x] Docker image SBOM support
 - [x] Multiple formats in a single run
 - [x] Monorepo support
-- [ ] SLSA attestation level 2
+- [x] SLSA attestation level 2
 - [x] Dry-run mode
 - [x] OCI registry upload (ghcr.io)
 
