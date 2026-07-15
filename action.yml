@@ -30,7 +30,7 @@ inputs:
     required: false
     default: "true"
   scan-path:
-    description: Directory to scan. Useful for monorepos.
+    description: 'Directory or directories to scan. Comma-separated for monorepos (e.g. "services/api,services/worker"). If image is set, this is ignored.'
     required: false
     default: .
   image:

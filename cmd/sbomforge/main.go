@@ -32,33 +32,35 @@ func run() error {
 	var sbomPaths, bundlePaths, sbomURLs []string
 
 	client := release.New(cfg)
-	for _, format := range cfg.Formats {
-		sbomPath, err := sbom.Generate(ctx, cfg, format)
-		handleErr(cfg, err, "generate sbom")
+	for _, scanPath := range cfg.ScanPaths {
+		for _, format := range cfg.Formats {
+			sbomPath, err := sbom.Generate(ctx, cfg, format, scanPath)
+			handleErr(cfg, err, "generate sbom")
 
-		var bundlePath string
-		if !cfg.DryRun {
-			bundlePath, err = sign.Sign(ctx, cfg, sbomPath)
-			handleErr(cfg, err, "sign sbom")
+			var bundlePath string
+			if !cfg.DryRun {
+				bundlePath, err = sign.Sign(ctx, cfg, sbomPath)
+				handleErr(cfg, err, "sign sbom")
+			}
+
+			var sbomURL string
+			if !cfg.DryRun {
+				sbomURL, err = client.Upload(ctx, sbomPath, bundlePath, format)
+				handleErr(cfg, err, "upload to release")
+			}
+
+			if !cfg.DryRun && cfg.OCIImage != "" {
+				err = oci.Attach(ctx, cfg, sbomPath)
+				handleErr(cfg, err, "attach sbom to oci image")
+			}
+
+			err = summary.Write(cfg, format, sbomPath, sbomURL, bundlePath)
+			handleErr(cfg, err, "write summary")
+
+			sbomPaths = append(sbomPaths, sbomPath)
+			bundlePaths = append(bundlePaths, bundlePath)
+			sbomURLs = append(sbomURLs, sbomURL)
 		}
-
-		var sbomURL string
-		if !cfg.DryRun {
-			sbomURL, err = client.Upload(ctx, sbomPath, bundlePath, format)
-			handleErr(cfg, err, "upload to release")
-		}
-
-		if !cfg.DryRun && cfg.OCIImage != "" {
-			err = oci.Attach(ctx, cfg, sbomPath)
-			handleErr(cfg, err, "attach sbom to oci image")
-		}
-
-		err = summary.Write(cfg, format, sbomPath, sbomURL, bundlePath)
-		handleErr(cfg, err, "write summary")
-
-		sbomPaths = append(sbomPaths, sbomPath)
-		bundlePaths = append(bundlePaths, bundlePath)
-		sbomURLs = append(sbomURLs, sbomURL)
 	}
 
 	_ = cfg.WriteOutput("sbom-path", strings.Join(sbomPaths, ","))

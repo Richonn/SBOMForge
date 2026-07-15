@@ -43,14 +43,13 @@ func fakeExecCommand(ctx context.Context, name string, args ...string) *exec.Cmd
 func TestGenerate_Success(t *testing.T) {
 	cfg := &config.Config{
 		ArtifactName: "sbom",
-		ScanPath:     ".",
 	}
 
 	origExecCommand := execCommand
 	execCommand = fakeExecCommand
 	defer func() { execCommand = origExecCommand }()
 
-	path, err := Generate(context.Background(), cfg, "spdx-json")
+	path, err := Generate(context.Background(), cfg, "spdx-json", ".")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -65,18 +64,35 @@ func TestGenerate_Success(t *testing.T) {
 func TestGenerate_OutputPath(t *testing.T) {
 	cfg := &config.Config{
 		ArtifactName: "mysbom",
-		ScanPath:     ".",
 	}
 
 	origExecCommand := execCommand
 	execCommand = fakeExecCommand
 	defer func() { execCommand = origExecCommand }()
 
-	path, err := Generate(context.Background(), cfg, "cyclonedx-json")
+	path, err := Generate(context.Background(), cfg, "cyclonedx-json", ".")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if !strings.HasSuffix(path, "mysbom.cyclonedx-json.json") {
+		t.Errorf("unexpected path: %s", path)
+	}
+}
+
+func TestGenerate_MonorepoOutputPath(t *testing.T) {
+	cfg := &config.Config{
+		ArtifactName: "sbom",
+	}
+
+	origExecCommand := execCommand
+	execCommand = fakeExecCommand
+	defer func() { execCommand = origExecCommand }()
+
+	path, err := Generate(context.Background(), cfg, "spdx-json", "services/api")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !strings.HasSuffix(path, "sbom.api.spdx-json.json") {
 		t.Errorf("unexpected path: %s", path)
 	}
 }
@@ -91,7 +107,7 @@ func TestGenerate_DockerImage(t *testing.T) {
 	execCommand = fakeExecCommand
 	defer func() { execCommand = origExecCommand }()
 
-	path, err := Generate(context.Background(), cfg, "spdx-json")
+	path, err := Generate(context.Background(), cfg, "spdx-json", ".")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -117,7 +133,7 @@ func TestGenerate_DockerImageSource(t *testing.T) {
 		}
 	}()
 
-	_, _ = Generate(context.Background(), cfg, "spdx-json")
+	_, _ = Generate(context.Background(), cfg, "spdx-json", ".")
 
 	if len(capturedArgs) == 0 || capturedArgs[1] != "docker:alpine:3.21" {
 		t.Errorf("expected source docker:alpine:3.21, got args: %v", capturedArgs)
@@ -127,7 +143,6 @@ func TestGenerate_DockerImageSource(t *testing.T) {
 func TestGenerate_SyftFailure(t *testing.T) {
 	cfg := &config.Config{
 		ArtifactName: "sbom",
-		ScanPath:     ".",
 	}
 
 	execCommand = func(ctx context.Context, name string, args ...string) *exec.Cmd {
@@ -140,7 +155,7 @@ func TestGenerate_SyftFailure(t *testing.T) {
 		}
 	}()
 
-	_, err := Generate(context.Background(), cfg, "spdx-json")
+	_, err := Generate(context.Background(), cfg, "spdx-json", ".")
 	if err == nil {
 		t.Error("expected error when syft fails, got nil")
 	}
