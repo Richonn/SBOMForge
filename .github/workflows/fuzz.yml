@@ -19,7 +19,12 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
+      - name: Run fuzz seed corpus
+        if: github.event_name == 'push'
+        run: go test -run=^Fuzz ./internal/config/
+
       - name: Fuzz config package
+        if: github.event_name == 'schedule'
         run: |
-          go test -fuzz=FuzzParseBool -fuzztime=30s ./internal/config/
-          go test -fuzz=FuzzGetEnvDefault -fuzztime=30s ./internal/config/
+          go test -fuzz=FuzzParseBool -fuzztime=60s ./internal/config/
+          go test -fuzz=FuzzGetEnvDefault -fuzztime=60s ./internal/config/
