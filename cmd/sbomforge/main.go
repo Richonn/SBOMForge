@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Richonn/sbomforge/internal/config"
+	"github.com/Richonn/sbomforge/internal/oci"
 	"github.com/Richonn/sbomforge/internal/release"
 	"github.com/Richonn/sbomforge/internal/sbom"
 	"github.com/Richonn/sbomforge/internal/sign"
@@ -45,6 +46,11 @@ func run() error {
 		if !cfg.DryRun {
 			sbomURL, err = client.Upload(ctx, sbomPath, bundlePath, format)
 			handleErr(cfg, err, "upload to release")
+		}
+
+		if !cfg.DryRun && cfg.OCIImage != "" {
+			err = oci.Attach(ctx, cfg, sbomPath)
+			handleErr(cfg, err, "attach sbom to oci image")
 		}
 
 		err = summary.Write(cfg, format, sbomPath, sbomURL, bundlePath)
