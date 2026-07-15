@@ -54,6 +54,7 @@ jobs:
 | `image` | no | — | Docker image to scan (e.g. `alpine:3.21`, `ghcr.io/org/app:latest`). If set, `scan-path` is ignored |
 | `fail-on-error` | no | `true` | Fail the job if SBOM generation fails |
 | `dry-run` | no | `false` | Generate the SBOM without signing or uploading. Useful for testing |
+| `oci-image` | no | — | OCI image reference to attach the SBOM to (e.g. `ghcr.io/org/app@sha256:...`). Requires prior login with `docker/login-action` |
 
 ## Outputs
 
@@ -117,6 +118,33 @@ The SBOM is still generated and visible in the Job Summary, but no signature is 
 
 ---
 
+## OCI registry upload
+
+To attach the SBOM directly to an image in a registry, use the `oci-image` input. This makes the SBOM discoverable by tools like `cosign`, `grype`, or `syft` without needing to find it in the release assets.
+
+Authenticate first with `docker/login-action`, then pass the image reference:
+
+```yaml
+- uses: docker/login-action@v3
+  with:
+    registry: ghcr.io
+    username: ${{ github.actor }}
+    password: ${{ secrets.GITHUB_TOKEN }}
+
+- uses: Richonn/SBOMForge@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    oci-image: ghcr.io/owner/app@sha256:abc123
+```
+
+The SBOM can then be retrieved with:
+
+```bash
+cosign download sbom ghcr.io/owner/app@sha256:abc123
+```
+
+---
+
 ## Docker image scanning
 
 To scan a Docker image instead of source code, pass the `image` input:
@@ -139,7 +167,7 @@ When `image` is set, `scan-path` is ignored.
 - [ ] Monorepo support
 - [ ] SLSA attestation level 2
 - [x] Dry-run mode
-- [ ] OCI registry upload (ghcr.io)
+- [x] OCI registry upload (ghcr.io)
 
 ---
 

@@ -133,6 +133,31 @@ func TestLoad_MultipleFormatsWithSpaces(t *testing.T) {
 	}
 }
 
+func TestLoad_OCIImageDefault(t *testing.T) {
+	setBaseEnv(t)
+
+	c, err := Load()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if c.OCIImage != "" {
+		t.Errorf("OCIImage = %q, want empty", c.OCIImage)
+	}
+}
+
+func TestLoad_OCIImageSet(t *testing.T) {
+	setBaseEnv(t)
+	t.Setenv("INPUT_OCI-IMAGE", "ghcr.io/owner/app@sha256:abc123")
+
+	c, err := Load()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if c.OCIImage != "ghcr.io/owner/app@sha256:abc123" {
+		t.Errorf("OCIImage = %q, want ghcr.io/owner/app@sha256:abc123", c.OCIImage)
+	}
+}
+
 func TestLoad_DryRunDefault(t *testing.T) {
 	setBaseEnv(t)
 
