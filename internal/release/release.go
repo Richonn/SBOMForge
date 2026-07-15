@@ -49,6 +49,17 @@ func (c *Client) Upload(ctx context.Context, sbomPath, bundlePath, format string
 	return sbomURL, nil
 }
 
+func (c *Client) UploadFile(ctx context.Context, path, label string) (string, error) {
+	if !c.cfg.AttachToRelease {
+		return "", nil
+	}
+	release, err := c.getRelease(ctx)
+	if err != nil {
+		return "", err
+	}
+	return c.uploadAsset(ctx, release, path, label)
+}
+
 func (c *Client) getRelease(ctx context.Context) (*github.RepositoryRelease, error) {
 	release, resp, err := c.gh.Repositories.GetReleaseByTag(ctx, c.cfg.RepoOwner, c.cfg.RepoName, c.cfg.RefName)
 	if err != nil {

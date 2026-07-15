@@ -45,6 +45,10 @@ inputs:
     description: Generate the SBOM without signing or uploading. Useful for testing.
     required: false
     default: "false"
+  attest:
+    description: Generate a signed SLSA provenance attestation for each SBOM. Requires id-token:write permission.
+    required: false
+    default: "false"
   oci-image:
     description: 'OCI image reference to attach the SBOM to (e.g. ghcr.io/org/app@sha256:...). Requires prior login with docker/login-action. If set, the SBOM is attached to the image in the registry.'
     required: false

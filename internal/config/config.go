@@ -18,6 +18,7 @@ type Config struct {
 	FailOnError     bool
 	DryRun          bool
 	OCIImage        string
+	Attest          bool
 
 	RepoOwner   string
 	RepoName    string
@@ -54,6 +55,7 @@ func Load() (*Config, error) {
 	c.FailOnError = parseBool(getEnvDefault("INPUT_FAIL-ON-ERROR", "true"))
 	c.DryRun = parseBool(getEnvDefault("INPUT_DRY-RUN", "false"))
 	c.OCIImage = getEnvDefault("INPUT_OCI-IMAGE", "")
+	c.Attest = parseBool(getEnvDefault("INPUT_ATTEST", "false"))
 
 	validFormats := map[string]bool{
 		"spdx-json":      true,
