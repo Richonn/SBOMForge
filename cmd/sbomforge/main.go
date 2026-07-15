@@ -8,6 +8,7 @@ import (
 
 	"github.com/Richonn/sbomforge/internal/config"
 	"github.com/Richonn/sbomforge/internal/oci"
+	"github.com/Richonn/sbomforge/internal/provenance"
 	"github.com/Richonn/sbomforge/internal/release"
 	"github.com/Richonn/sbomforge/internal/sbom"
 	"github.com/Richonn/sbomforge/internal/sign"
@@ -52,6 +53,13 @@ func run() error {
 			if !cfg.DryRun && cfg.OCIImage != "" {
 				err = oci.Attach(ctx, cfg, sbomPath)
 				handleErr(cfg, err, "attach sbom to oci image")
+			}
+
+			if !cfg.DryRun && cfg.Attest {
+				provPath, err := provenance.Generate(ctx, cfg, sbomPath)
+				handleErr(cfg, err, "generate provenance")
+				_, err = client.UploadFile(ctx, provPath, "SLSA Provenance")
+				handleErr(cfg, err, "upload provenance")
 			}
 
 			err = summary.Write(cfg, format, sbomPath, sbomURL, bundlePath)
