@@ -13,7 +13,7 @@ type Config struct {
 	Sign            bool
 	AttachToRelease bool
 	UploadToSummary bool
-	ScanPath        string
+	ScanPaths       []string
 	Image           string
 	FailOnError     bool
 	DryRun          bool
@@ -45,7 +45,11 @@ func Load() (*Config, error) {
 	c.Sign = parseBool(getEnvDefault("INPUT_SIGN", "true"))
 	c.AttachToRelease = parseBool(getEnvDefault("INPUT_ATTACH-TO-RELEASE", "true"))
 	c.UploadToSummary = parseBool(getEnvDefault("INPUT_UPLOAD-TO-SUMMARY", "true"))
-	c.ScanPath = getEnvDefault("INPUT_SCAN-PATH", ".")
+	rawPaths := strings.Split(getEnvDefault("INPUT_SCAN-PATH", "."), ",")
+	for i, p := range rawPaths {
+		rawPaths[i] = strings.TrimSpace(p)
+	}
+	c.ScanPaths = rawPaths
 	c.Image = getEnvDefault("INPUT_IMAGE", "")
 	c.FailOnError = parseBool(getEnvDefault("INPUT_FAIL-ON-ERROR", "true"))
 	c.DryRun = parseBool(getEnvDefault("INPUT_DRY-RUN", "false"))

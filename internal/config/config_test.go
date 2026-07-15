@@ -29,8 +29,8 @@ func TestLoad_Defaults(t *testing.T) {
 	if c.ArtifactName != "sbom" {
 		t.Errorf("ArtifactName = %q, want sbom", c.ArtifactName)
 	}
-	if c.ScanPath != "." {
-		t.Errorf("ScanPath = %q, want .", c.ScanPath)
+	if len(c.ScanPaths) != 1 || c.ScanPaths[0] != "." {
+		t.Errorf("ScanPaths = %q, want [.]", c.ScanPaths)
 	}
 	if !c.Sign {
 		t.Error("Sign = false, want true")
@@ -130,6 +130,32 @@ func TestLoad_MultipleFormatsWithSpaces(t *testing.T) {
 	}
 	if !reflect.DeepEqual(c.Formats, []string{"spdx-json", "cyclonedx-json", "syft-json"}) {
 		t.Errorf("Formats = %q, want [spdx-json cyclonedx-json syft-json]", c.Formats)
+	}
+}
+
+func TestLoad_MonorepoScanPaths(t *testing.T) {
+	setBaseEnv(t)
+	t.Setenv("INPUT_SCAN-PATH", "services/api,services/worker")
+
+	c, err := Load()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(c.ScanPaths) != 2 || c.ScanPaths[0] != "services/api" || c.ScanPaths[1] != "services/worker" {
+		t.Errorf("ScanPaths = %q, want [services/api services/worker]", c.ScanPaths)
+	}
+}
+
+func TestLoad_MonorepoScanPathsWithSpaces(t *testing.T) {
+	setBaseEnv(t)
+	t.Setenv("INPUT_SCAN-PATH", "services/api , services/worker , services/frontend")
+
+	c, err := Load()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(c.ScanPaths) != 3 {
+		t.Errorf("ScanPaths = %q, want 3 paths", c.ScanPaths)
 	}
 }
 

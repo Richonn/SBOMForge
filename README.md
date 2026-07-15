@@ -50,7 +50,7 @@ jobs:
 | `sign` | no | `true` | Sign the SBOM with Cosign keyless |
 | `attach-to-release` | no | `true` | Attach the SBOM to the GitHub Release |
 | `upload-to-summary` | no | `true` | Show a summary in the GitHub Actions Job Summary |
-| `scan-path` | no | `.` | Directory to scan (useful for monorepos) |
+| `scan-path` | no | `.` | Directory or directories to scan. Comma-separated for monorepos (e.g. `services/api,services/worker`). If `image` is set, this is ignored |
 | `image` | no | — | Docker image to scan (e.g. `alpine:3.21`, `ghcr.io/org/app:latest`). If set, `scan-path` is ignored |
 | `fail-on-error` | no | `true` | Fail the job if SBOM generation fails |
 | `dry-run` | no | `false` | Generate the SBOM without signing or uploading. Useful for testing |
@@ -60,9 +60,9 @@ jobs:
 
 | Output | Description |
 |---|---|
-| `sbom-path` | Local path(s) of the generated SBOM file(s). Comma-separated when multiple formats are used |
-| `sbom-url` | Download URL(s) of the SBOM(s) on the GitHub Release. Comma-separated when multiple formats are used |
-| `signature-bundle` | Path(s) to the Cosign signature bundle(s). Comma-separated when multiple formats are used |
+| `sbom-path` | Local path(s) of the generated SBOM file(s). Comma-separated when multiple formats or paths are used |
+| `sbom-url` | Download URL(s) of the SBOM(s) on the GitHub Release. Comma-separated when multiple formats or paths are used |
+| `signature-bundle` | Path(s) to the Cosign signature bundle(s). Comma-separated when multiple formats or paths are used |
 
 ---
 
@@ -85,6 +85,8 @@ cosign verify-blob \
 | SPDX JSON | `spdx-json` | `sbom.spdx-json.json` |
 | CycloneDX JSON | `cyclonedx-json` | `sbom.cyclonedx-json.json` |
 | Syft JSON | `syft-json` | `sbom.syft-json.json` |
+
+When scanning multiple paths, the directory basename is included in the filename: `sbom.api.spdx-json.json`, `sbom.worker.spdx-json.json`.
 
 ---
 
@@ -145,6 +147,21 @@ cosign download sbom ghcr.io/owner/app@sha256:abc123
 
 ---
 
+## Monorepo support
+
+To scan multiple directories in a single run, pass a comma-separated list to `scan-path`:
+
+```yaml
+- uses: Richonn/SBOMForge@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    scan-path: "services/api,services/worker,services/frontend"
+```
+
+Each path generates its own SBOM per format. Output files are named using the directory basename: `sbom.api.spdx-json.json`, `sbom.worker.spdx-json.json`, etc. All outputs (`sbom-path`, `sbom-url`, `signature-bundle`) are comma-separated.
+
+---
+
 ## Docker image scanning
 
 To scan a Docker image instead of source code, pass the `image` input:
@@ -164,7 +181,7 @@ When `image` is set, `scan-path` is ignored.
 
 - [x] Docker image SBOM support
 - [x] Multiple formats in a single run
-- [ ] Monorepo support
+- [x] Monorepo support
 - [ ] SLSA attestation level 2
 - [x] Dry-run mode
 - [x] OCI registry upload (ghcr.io)
